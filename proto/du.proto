@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+service du {
+  rpc hi (Name) returns (Reply) {}
+}
+
+message Name {
+  string name = 1;
+}
+
+message Reply {
+  string message = 1;
+}
+

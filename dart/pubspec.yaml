@@ -1,0 +1,13 @@
+name: du
+
+environment:
+    sdk: '>=2.3.2 <3.0.0'
+
+dependencies:
+    protobuf: ^0.13.12
+    async: ^2.2.0
+    grpc: ^1.0.3
+
+dev_dependencies:
+    test: ^1.6.4
+
