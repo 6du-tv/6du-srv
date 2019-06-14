@@ -4,12 +4,14 @@ import 'package:grpc/grpc.dart';
 import 'proto/du.pb.dart';
 import 'proto/du.pbgrpc.dart';
 
+const HOST = "192.168.1.154";
+
 class Client {
   ClientChannel channel;
   duClient stub;
 
   Future<void> main(List<String> args) async {
-    channel = ClientChannel('127.0.0.1',
+    channel = ClientChannel(HOST,
         port: 50051,
         options:
             const ChannelOptions(credentials: ChannelCredentials.insecure()));
