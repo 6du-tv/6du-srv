@@ -1,8 +1,4 @@
 #!/usr/bin/env dart
-
-import 'dart:async';
-import 'dart:math' show Random;
-
 import 'package:grpc/grpc.dart';
 
 import 'proto/du.pb.dart';
@@ -28,19 +24,14 @@ class Client {
     await channel.shutdown();
   }
 
-  void printReply(Reply reply) {
-    print(reply.message);
-  }
-
   /// Run the getFeature demo. Calls getFeature with a point known to have a
   /// feature and a point known not to have a feature.
   Future<void> hi() async {
-    final name = Name()..name = "鹏";
-
-    printReply(await stub.hi(name));
-    printReply(await stub.hi(name));
-    printReply(await stub.hi(name));
-    printReply(await stub.hi(name));
+    for (var i in Iterable.generate(10)) {
+      final name = Name()..name = "鹏 $i";
+      Reply reply = await stub.hi(name);
+      print(reply.message);
+    }
   }
 }
 
