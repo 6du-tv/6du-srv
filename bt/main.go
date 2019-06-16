@@ -8,7 +8,7 @@ import (
 )
 
 func createTorrentFileExample() {
-	t1 := libtorrent.CreateTorrentFile("/Users/axet/Downloads/Prattchet")
+    t1 := libtorrent.CreateTorrentFile("/Users/z/git/6du-srv/bt")
 	ioutil.WriteFile("./test.torrent", t1, 0644)
 }
 
@@ -33,3 +33,6 @@ func downloadMagnetStatusExample() {
 	libtorrent.Close()
 }
 
+func main() {
+    createTorrentFileExample()
+}
