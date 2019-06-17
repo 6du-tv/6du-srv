@@ -1,38 +1,59 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"log"
-	"time"
-
-	"gitlab.com/axet/libtorrent"
+	"net"
+	"net/url"
+	"os"
+	"path"
+	"runtime"
+	"sync"
 )
 
-func createTorrentFileExample() {
-    t1 := libtorrent.CreateTorrentFile("/Users/z/git/6du-srv/bt")
-	ioutil.WriteFile("./test.torrent", t1, 0644)
-}
+func connect(uri string) {
+	fmt.Println(uri)
 
-func downloadMagnetWaitExample() {
-	libtorrent.Create()
-	t1 := libtorrent.AddMagnet("/tmp", "magnet:?...")
-	libtorrent.StartTorrent(t1)
-	libtorrent.WaitAll()
-	log.Println("done")
-	libtorrent.Close()
-}
-
-func downloadMagnetStatusExample() {
-	libtorrent.Create()
-	t1 := libtorrent.AddMagnet("/tmp", "magnet:?...")
-	libtorrent.StartTorrent(t1)
-	for libtorrent.TorrentStatus(t1) == libtorrent.StatusDownloading {
-		time.Sleep(100 * time.Millisecond)
-		log.Println("loop")
+	u, err := url.Parse(uri)
+	if err != nil {
+		log.Printf("url.Parse error %s\n", err)
+		return
 	}
-	log.Println("done")
-	libtorrent.Close()
+
+	addr, err := net.ResolveUDPAddr("udp", u.Host)
+	if err != nil {
+		log.Printf("Resolve DNS error, %s\n", err)
+		return
+	}
+	log.Print(addr)
 }
 
 func main() {
-    createTorrentFileExample()
+	_, currentFilePath, _, _ := runtime.Caller(0)
+	dirpath := path.Dir(currentFilePath)
+	file, err := os.Open(path.Join(dirpath, "udp.txt"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	var thread sync.WaitGroup
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		var uri string = scanner.Text()
+		if len(uri) > 0 {
+			thread.Add(1)
+			go func(uri string) {
+				defer thread.Done()
+				connect(uri)
+			}(uri)
+		}
+	}
+	thread.Wait()
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
 }
