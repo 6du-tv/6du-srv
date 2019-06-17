@@ -23,7 +23,7 @@ func main() {
 
 	// Make a connection
 	tmpAddr := &net.UDPAddr{
-		IP:   net.ParseIP("127.0.0.1"),
+		IP:   nil,
 		Port: 0,
 	}
 
