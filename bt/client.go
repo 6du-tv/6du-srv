@@ -9,7 +9,7 @@ import (
 
 var (
 	laddr = flag.String("laddr", "127.0.0.1:9000", "local server address")
-	raddr = flag.String("raddr", "127.0.0.1:20000", "remote server address")
+	raddr = flag.String("raddr", "xvc.bid:20000", "remote server address")
 )
 
 func init() {
