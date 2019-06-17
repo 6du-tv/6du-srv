@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bt/util"
 	"bufio"
 	"fmt"
 	"log"
@@ -9,7 +10,6 @@ import (
 	"os"
 	"path"
 	"runtime"
-	"sync"
 )
 
 func connect(uri string) {
@@ -38,20 +38,16 @@ func main() {
 	}
 	defer file.Close()
 
-	var thread sync.WaitGroup
+	var wait util.Wait
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		var uri string = scanner.Text()
 		if len(uri) > 0 {
-			thread.Add(1)
-			go func(uri string) {
-				defer thread.Done()
-				connect(uri)
-			}(uri)
+			wait.Add(func() { connect(uri) })
 		}
 	}
-	thread.Wait()
+	wait.Wait()
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
