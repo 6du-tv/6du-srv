@@ -44,7 +44,7 @@ func main() {
 	for scanner.Scan() {
 		var uri string = scanner.Text()
 		if len(uri) > 0 {
-			wait.Add(func() { connect(uri) })
+			wait.Call(func() { connect(uri) })
 		}
 	}
 	wait.Wait()
