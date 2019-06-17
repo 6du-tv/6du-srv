@@ -7,27 +7,26 @@ import (
 	"net"
 )
 
-var raddr = flag.String("raddr", "xvc.bid:20000", "remote server address")
-
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	flag.Parse()
 }
 
 func main() {
-	// Resolving Address
-	remoteAddr, err := net.ResolveUDPAddr("udp", *raddr)
+	localAddr, err := net.ResolveUDPAddr("udp", ":20000")
 	if err != nil {
-		log.Fatalln("Error: ", err)
+		fmt.Println(err)
+		return
 	}
 
-	// Make a connection
-	tmpAddr := &net.UDPAddr{
-		IP:   nil,
-		Port: 0,
+	remoteAddr, err := net.ResolveUDPAddr("udp", "xvc.bid:20000")
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 
-	conn, err := net.DialUDP("udp", tmpAddr, remoteAddr)
+	// Build listening connections
+	conn, err := net.ListenUDP("udp", localAddr)
 	// Exit if some error occured
 	if err != nil {
 		log.Fatalln("Error: ", err)
@@ -35,19 +34,19 @@ func main() {
 	defer conn.Close()
 
 	// write a message to server
-	_, err = conn.Write([]byte("hello"))
+	_, err = conn.WriteToUDP([]byte("hello"), remoteAddr)
 	if err != nil {
 		log.Println(err)
 	} else {
-		fmt.Println(">>> Packet sent to: ", *raddr)
+		fmt.Println(">>> Packet sent to: ", remoteAddr)
 	}
 
 	// Receive response from server
 	buf := make([]byte, 1024)
-	rn, rmAddr, err := conn.ReadFromUDP(buf)
+	rn, remAddr, err := conn.ReadFromUDP(buf)
 	if err != nil {
 		log.Println(err)
 	} else {
-		fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", rn, rmAddr, string(buf[:rn]))
+		fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", rn, remAddr, string(buf[:rn]))
 	}
 }
