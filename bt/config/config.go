@@ -49,18 +49,14 @@ func init() {
 	}
 
 	if 0 == CONFIG.PORT {
-		CONFIG.PORT = uint16(rand.Int31n(20000)) + 10000
-		update = true
-	}
+		port := uint16(rand.Int31n(20000)) + 10000
 
-	port := CONFIG.PORT
-	for ; port < 49151; port++ {
-		if !net.PortUsed(port) {
-			break
+		for ; port < 49000; port++ {
+			if !net.PortUsed(port) {
+				break
+			}
 		}
-	}
 
-	if port != CONFIG.PORT {
 		CONFIG.PORT = port
 		update = true
 	}
