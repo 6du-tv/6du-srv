@@ -2,6 +2,8 @@ package config
 
 import (
 	"bytes"
+	"crypto/ecdsa"
+	"encoding/base64"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -9,11 +11,9 @@ import (
 	"runtime"
 
 	udp "bt/udp"
-	util "bt/util"
-
-	. "github.com/urwork/throw"
 
 	"github.com/BurntSushi/toml"
+	. "github.com/urwork/throw"
 )
 
 type Config struct {
@@ -39,7 +39,10 @@ func init() {
 	update := false
 
 	if 0 == len(CONFIG.SECRET) {
-		CONFIG.SECRET = util.RandByteB64(32)
+		key, _ := ecdsa.GenerateKey(S256(), rand.Reader)
+		//		privateKey := hex.EncodeToString()
+		//		address := crypto.PubkeyToAddress(key.PublicKey).Hex()
+		CONFIG.SECRET = base64.RawURLEncoding.EncodeToString(key.D.Bytes())
 		update = true
 	}
 
@@ -63,6 +66,7 @@ func init() {
 	if update {
 		b := &bytes.Buffer{}
 		Throw(toml.NewEncoder(b).Encode(CONFIG))
+
 		Throw(ioutil.WriteFile(filepath, b.Bytes(), 0644))
 	}
 }

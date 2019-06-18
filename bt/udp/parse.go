@@ -31,6 +31,7 @@ func Parse(buf []byte, remote *net.UDPAddr, conn *Conn) {
 	switch cmd {
 
 	case PING:
+		remote.IP.To16
 		ip := binary.BigEndian.Uint64(remote.IP)
 		if !REPLYD.Has(ip) && REPLYD.Size() < PING_RATE_LIMIT {
 			REPLYD.Add(ip)
