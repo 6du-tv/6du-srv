@@ -47,7 +47,10 @@ func init() {
 		if err := encoder.Encode(CONFIG); err != nil {
 			panic(err)
 		}
-		ioutil.WriteFile(filepath, b.Bytes(), 0644)
+		err := ioutil.WriteFile(filepath, b.Bytes(), 0644)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	print(CONFIG.ID)
