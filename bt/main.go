@@ -2,13 +2,56 @@ package main
 
 import (
 	util "bt/util"
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
+	"os"
+	"path"
+	"runtime"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
 
+type Config struct {
+	ID string
+}
+
+var CONFIG Config
+
 func init() {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		panic(ok)
+	}
+
+	dirname := path.Dir(filename)
+	filepath := path.Join(dirname, "config.toml")
+
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+
+	} else {
+
+		if _, err := toml.DecodeFile(filepath, &CONFIG); err != nil {
+			panic(err)
+		}
+	}
+
+	if 0 == len(CONFIG.ID) {
+		CONFIG.ID = util.B64uuid()
+		b := &bytes.Buffer{}
+		encoder := toml.NewEncoder(b)
+
+		if err := encoder.Encode(CONFIG); err != nil {
+			panic(err)
+		}
+		ioutil.WriteFile(filepath, b.Bytes(), 0644)
+	}
+
+	print(CONFIG.ID)
+
 }
 
 const MTU int = 1472

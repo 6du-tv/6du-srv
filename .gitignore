@@ -63,5 +63,5 @@ tags
 vendor/
 
 # End of https://www.gitignore.io/api/go,vim,dart
-
+config.toml
 .DS_Store
