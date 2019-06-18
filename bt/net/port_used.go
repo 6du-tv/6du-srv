@@ -7,7 +7,7 @@ import (
 	. "github.com/urwork/throw"
 )
 
-func PortUsed(uint16 port) bool {
+func PortUsed(port uint16) bool {
 	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", port))
 	Throw(err)
 

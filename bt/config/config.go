@@ -8,6 +8,7 @@ import (
 	"path"
 	"runtime"
 
+	"bt/net"
 	util "bt/util"
 
 	. "github.com/urwork/throw"
@@ -48,12 +49,20 @@ func init() {
 	}
 
 	if 0 == CONFIG.PORT {
-		CONFIG.PORT = uint16(rand.Int31n(30000)) + 10000
+		CONFIG.PORT = uint16(rand.Int31n(20000)) + 10000
 		update = true
 	}
-	port = CONFIG.PORT
-	for PortUsed(port) {
 
+	port := CONFIG.PORT
+	for ; port < 49151; port++ {
+		if !net.PortUsed(port) {
+			break
+		}
+	}
+
+	if port != CONFIG.PORT {
+		CONFIG.PORT = port
+		update = true
 	}
 
 	if update {
