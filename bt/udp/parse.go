@@ -1,6 +1,7 @@
 package udp
 
 import (
+	"encoding/binary"
 	"fmt"
 	"net"
 	"time"
@@ -8,9 +9,12 @@ import (
 	"github.com/scylladb/go-set"
 )
 
-var REPLYD = set.NewIntSet()
+const PING_RATE_LIMIT = 1024
+
+var REPLYD = set.NewUint64Set()
 
 func init() {
+
 	ticker := time.NewTicker(1 * time.Second)
 
 	go func() {
@@ -27,14 +31,14 @@ func Parse(buf []byte, remote *net.UDPAddr, conn *Conn) {
 	switch cmd {
 
 	case PING:
-		ip := []byte(remote.IP)
-		if !REPLYD.Contains(ip) && REPLYD.Cardinality() < 1024 {
+		ip := binary.BigEndian.Uint64(remote.IP)
+		if !REPLYD.Has(ip) && REPLYD.Size() < PING_RATE_LIMIT {
 			REPLYD.Add(ip)
 			conn.WriteUDP([]byte{byte(PONG)}, remote)
 		} else {
 			print("IP", ip)
-			print("REPLYD.Cardinality()", REPLYD.Cardinality())
-			print("REPLYD.Contains(remote.IP)", REPLYD.Contains(ip))
+			print("REPLYD.Cardinality()", REPLYD.Size())
+			print("REPLYD.Contains(remote.IP)", REPLYD.Has(ip))
 			print("REPLYD", REPLYD)
 		}
 
