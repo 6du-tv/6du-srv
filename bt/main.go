@@ -38,9 +38,8 @@ func main() {
 
 	// Build listening connections
 	conn, err := net.ListenUDP("udp", localAddr)
-	// Exit if some error occured
-	defer conn.Close()
 	Throw(err)
+	defer conn.Close()
 
 	ticker := time.NewTicker(1 * time.Second)
 

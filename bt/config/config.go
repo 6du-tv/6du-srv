@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"path"
 	"runtime"
@@ -47,8 +48,12 @@ func init() {
 	}
 
 	if 0 == CONFIG.PORT {
-		CONFIG.PORT = 27182
+		CONFIG.PORT = uint16(rand.Int31n(30000)) + 10000
 		update = true
+	}
+	port = CONFIG.PORT
+	for PortUsed(port) {
+
 	}
 
 	if update {
