@@ -21,6 +21,19 @@ import (
 
 */
 
+type UDPConn struct {
+	*net.UDPConn
+}
+
+func (conn *UDPConn) WriteUDP(b []byte, addr *net.UDPAddr) {
+	_, err := conn.WriteToUDP(b, addr)
+	if err != nil {
+		log.Println(err)
+	} else {
+		fmt.Println(">>> Packet sent to: ", addr)
+	}
+}
+
 func main() {
 	print(CONFIG.ID)
 	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", CONFIG.PORT))
@@ -30,9 +43,10 @@ func main() {
 	Throw(err)
 
 	// Build listening connections
-	conn, err := net.ListenUDP("udp", localAddr)
+	_conn, err := net.ListenUDP("udp", localAddr)
 	Throw(err)
-	defer conn.Close()
+	defer _conn.Close()
+	conn := &UDPConn{_conn}
 
 	ticker := time.NewTicker(1 * time.Second)
 
@@ -41,12 +55,8 @@ func main() {
 		for range ticker.C {
 			buffer := []byte{byte(udp.PING)}
 			//		append(buffer, []byte(util.B64uuid()))
-			_, err = conn.WriteToUDP(buffer, remoteAddr)
-			if err != nil {
-				log.Println(err)
-			} else {
-				fmt.Println(">>> Packet sent to: ", remoteAddr)
-			}
+			conn.WriteUDP(buffer, remoteAddr)
+
 		}
 	}()
 
@@ -64,14 +74,14 @@ func main() {
 	}
 }
 
-func Parse(buf []byte, remote *net.UDPAddr, conn *net.UDPConn) {
+func Parse(buf []byte, remote *net.UDPAddr, conn *UDPConn) {
 	fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", len(buf), remote, buf)
 	cmd := udp.CMD(buf[0])
 
 	switch cmd {
 
 	case udp.PING:
-		conn.WriteToUDP([]byte{byte(udp.PONG)}, remote)
+		conn.WriteUDP([]byte{byte(udp.PONG)}, remote)
 	default:
 		fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", len(buf), remote, buf)
 
