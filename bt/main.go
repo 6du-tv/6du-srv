@@ -65,6 +65,6 @@ func main() {
 }
 
 func Parse(buf []byte, remote *net.UDPAddr, conn *net.UDPConn) {
-	fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", remote, buf)
+	fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", len(buf), remote, buf)
 
 }
