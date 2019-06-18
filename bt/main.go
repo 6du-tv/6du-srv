@@ -24,33 +24,22 @@ type Config struct {
 var CONFIG Config
 
 func init() {
-	_, filename, _, ok := runtime.Caller(0)
-	if !ok {
-		panic(ok)
-	}
+	_, filename, _, _ := runtime.Caller(0)
 
 	dirname := path.Dir(filename)
 	filepath := path.Join(dirname, "config.toml")
 
-	if _, err := os.Stat(filepath); os.IsNotExist(err) {
-
-	} else {
-
+	_, err := os.Stat(filepath)
+	if !os.IsNotExist(err) {
 		_, err := toml.DecodeFile(filepath, &CONFIG)
 		Throw(err)
-
 	}
 
 	if 0 == len(CONFIG.ID) {
 		CONFIG.ID = util.B64uuid()
 		b := &bytes.Buffer{}
-		encoder := toml.NewEncoder(b)
-
-		err := encoder.Encode(CONFIG)
-		Throw(err)
-
+		Throw(toml.NewEncoder(b).Encode(CONFIG))
 		Throw(ioutil.WriteFile(filepath, b.Bytes(), 0644))
-
 	}
 
 	print(CONFIG.ID)
