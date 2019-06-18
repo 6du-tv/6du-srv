@@ -48,7 +48,7 @@ func main() {
 	defer _conn.Close()
 	conn := &UDPConn{_conn}
 
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(10 * time.Second)
 
 	go func() {
 		// write a message to server
