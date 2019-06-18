@@ -1,4 +1,4 @@
-package util
+package config
 
 import (
 	"bytes"
@@ -7,14 +7,17 @@ import (
 	"path"
 	"runtime"
 
+	util "bt/util"
+
 	. "github.com/urwork/throw"
 
 	"github.com/BurntSushi/toml"
 )
 
 type Config struct {
-	ID  string
-	MTU int
+	ID   string
+	MTU  uint16
+	PORT uint16
 }
 
 var CONFIG Config
@@ -34,12 +37,17 @@ func init() {
 	update := false
 
 	if 0 == len(CONFIG.ID) {
-		CONFIG.ID = B64uuid()
+		CONFIG.ID = util.B64uuid()
 		update = true
 	}
 
 	if 0 == CONFIG.MTU {
 		CONFIG.MTU = 1472
+		update = true
+	}
+
+	if 0 == CONFIG.PORT {
+		CONFIG.PORT = 27182
 		update = true
 	}
 

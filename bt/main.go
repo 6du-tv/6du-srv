@@ -1,6 +1,7 @@
 package main
 
 import (
+	. "bt/config"
 	util "bt/util"
 
 	. "github.com/urwork/throw"
@@ -28,8 +29,8 @@ const (
 */
 
 func main() {
-	print(util.CONFIG.ID)
-	localAddr, err := net.ResolveUDPAddr("udp", ":20000")
+	print(CONFIG.ID)
+	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", CONFIG.PORT))
 	Throw(err)
 
 	remoteAddr, err := net.ResolveUDPAddr("udp", "47.105.53.166:20000")
@@ -57,7 +58,7 @@ func main() {
 
 	for {
 		// Receive response from server
-		buf := make([]byte, util.CONFIG.MTU)
+		buf := make([]byte, CONFIG.MTU)
 		rn, remAddr, err := conn.ReadFromUDP(buf)
 		if err != nil {
 			log.Println(err)
