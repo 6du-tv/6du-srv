@@ -1,28 +1,14 @@
-package client
+package main
 
 import (
+	util "bt/util"
 	"fmt"
 	"log"
-	"math/rand"
 	"net"
 	"time"
-	"./util/wait"
-	"./util/b64uuid"
-
 )
 
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
 func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
-func RandStringRunes(n int) []byte {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return []byte(string(b))
 }
 
 const MTU int = 1472
@@ -67,11 +53,10 @@ func main() {
 
 	ticker := time.NewTicker(1 * time.Second)
 
-	Wait.Run func() {
+	go func() {
 		// write a message to server
 		for range ticker.C {
-			print(B64uuid())
-			_, err = conn.WriteToUDP(RandStringRunes(MTU), remoteAddr)
+			_, err = conn.WriteToUDP([]byte(util.B64uuid()), remoteAddr)
 			if err != nil {
 				log.Println(err)
 			} else {
