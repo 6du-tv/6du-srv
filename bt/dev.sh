@@ -7,8 +7,8 @@ cd $_dirname
 export GOPROXY=https://goproxy.io
 export GO111MODULE=on
 
-RUN="go run main.go"
-exec $RUN
+RUN="go run client.go"
+$RUN
 COLOR='\033[0;32m'
 NOCOLOR='\033[0m'
 fswatch -o  .| xargs -n1 sh -c "echo '\n$COLOR----$NOCOLOR\n' ; exec $RUN"
