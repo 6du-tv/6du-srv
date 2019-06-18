@@ -2,6 +2,7 @@ package main
 
 import (
 	util "bt/util"
+
 	"bytes"
 	"fmt"
 	"io/ioutil"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
+	"github.com/urwork/throw"
 )
 
 type Config struct {
@@ -44,13 +46,12 @@ func init() {
 		b := &bytes.Buffer{}
 		encoder := toml.NewEncoder(b)
 
-		if err := encoder.Encode(CONFIG); err != nil {
-			panic(err)
-		}
-		err := ioutil.WriteFile(filepath, b.Bytes(), 0644)
-		if err != nil {
-			panic(err)
-		}
+		err := encoder.Encode(CONFIG)
+		throw.Throw(err)
+
+		err = ioutil.WriteFile(filepath, b.Bytes(), 0644)
+		throw.Throw(err)
+
 	}
 
 	print(CONFIG.ID)
