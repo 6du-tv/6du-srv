@@ -43,6 +43,8 @@ func init() {
 	update := false
 
 	if 0 == len(CONFIG.SECRET) {
+		// https://github.com/ethereum/go-ethereum/blob/master/crypto/crypto.go
+
 		key, _ := ecdsa.GenerateKey(btcec.S256(), cryptoRand.Reader)
 		//		privateKey := hex.EncodeToString()
 		//		address := crypto.PubkeyToAddress(key.PublicKey).Hex()
