@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/urwork/throw"
+	. "github.com/urwork/throw"
 )
 
 type Config struct {
@@ -36,9 +36,9 @@ func init() {
 
 	} else {
 
-		if _, err := toml.DecodeFile(filepath, &CONFIG); err != nil {
-			panic(err)
-		}
+		_, err := toml.DecodeFile(filepath, &CONFIG)
+		Throw(err)
+
 	}
 
 	if 0 == len(CONFIG.ID) {
@@ -47,10 +47,9 @@ func init() {
 		encoder := toml.NewEncoder(b)
 
 		err := encoder.Encode(CONFIG)
-		throw.Throw(err)
+		Throw(err)
 
-		err = ioutil.WriteFile(filepath, b.Bytes(), 0644)
-		throw.Throw(err)
+		Throw(ioutil.WriteFile(filepath, b.Bytes(), 0644))
 
 	}
 
@@ -79,24 +78,16 @@ const (
 func main() {
 
 	localAddr, err := net.ResolveUDPAddr("udp", ":20000")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	Throw(err)
 
 	remoteAddr, err := net.ResolveUDPAddr("udp", "47.105.53.166:20000")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	Throw(err)
 
 	// Build listening connections
 	conn, err := net.ListenUDP("udp", localAddr)
 	// Exit if some error occured
-	if err != nil {
-		log.Fatalln("Error: ", err)
-	}
 	defer conn.Close()
+	Throw(err)
 
 	ticker := time.NewTicker(1 * time.Second)
 
