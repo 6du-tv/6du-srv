@@ -6,11 +6,15 @@ import (
 	"encoding/base64"
 	"io/ioutil"
 	"math/rand"
+
 	"os"
 	"path"
 	"runtime"
 
 	udp "bt/udp"
+	cryptoRand "crypto/rand"
+
+	"github.com/btcsuite/btcd/btcec"
 
 	"github.com/BurntSushi/toml"
 	. "github.com/urwork/throw"
@@ -39,7 +43,7 @@ func init() {
 	update := false
 
 	if 0 == len(CONFIG.SECRET) {
-		key, _ := ecdsa.GenerateKey(S256(), rand.Reader)
+		key, _ := ecdsa.GenerateKey(btcec.S256(), cryptoRand.Reader)
 		//		privateKey := hex.EncodeToString()
 		//		address := crypto.PubkeyToAddress(key.PublicKey).Hex()
 		CONFIG.SECRET = base64.RawURLEncoding.EncodeToString(key.D.Bytes())
