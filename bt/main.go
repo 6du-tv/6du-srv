@@ -75,7 +75,6 @@ func main() {
 }
 
 func Parse(buf []byte, remote *net.UDPAddr, conn *UDPConn) {
-	fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", len(buf), remote, buf)
 	cmd := udp.CMD(buf[0])
 
 	switch cmd {
