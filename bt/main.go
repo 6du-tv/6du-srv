@@ -2,7 +2,7 @@ package main
 
 import (
 	. "bt/config"
-	util "bt/util"
+	udp "bt/udp"
 
 	. "github.com/urwork/throw"
 
@@ -10,13 +10,6 @@ import (
 	"log"
 	"net"
 	"time"
-)
-
-type CMD uint8
-
-const (
-	ALIVE CMD = iota
-	NODE
 )
 
 /*
@@ -33,7 +26,7 @@ func main() {
 	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", CONFIG.PORT))
 	Throw(err)
 
-	remoteAddr, err := net.ResolveUDPAddr("udp", "47.105.53.166:20000")
+	remoteAddr, err := net.ResolveUDPAddr("udp", "47.105.53.166:27039")
 	Throw(err)
 
 	// Build listening connections
@@ -46,7 +39,9 @@ func main() {
 	go func() {
 		// write a message to server
 		for range ticker.C {
-			_, err = conn.WriteToUDP([]byte(util.B64uuid()), remoteAddr)
+			buffer := []byte{byte(udp.PING)}
+			//		append(buffer, []byte(util.B64uuid()))
+			_, err = conn.WriteToUDP(buffer, remoteAddr)
 			if err != nil {
 				log.Println(err)
 			} else {

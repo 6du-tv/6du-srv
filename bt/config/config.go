@@ -8,7 +8,7 @@ import (
 	"path"
 	"runtime"
 
-	"bt/net"
+	udp "bt/udp"
 	util "bt/util"
 
 	. "github.com/urwork/throw"
@@ -50,9 +50,8 @@ func init() {
 
 	if 0 == CONFIG.PORT {
 		port := uint16(rand.Int31n(20000)) + 10000
-
 		for ; port < 49000; port++ {
-			if !net.PortUsed(port) {
+			if !udp.PortUsed(port) {
 				break
 			}
 		}
