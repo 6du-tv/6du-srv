@@ -66,5 +66,14 @@ func main() {
 
 func Parse(buf []byte, remote *net.UDPAddr, conn *net.UDPConn) {
 	fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", len(buf), remote, buf)
+	cmd := udp.CMD(buf[0])
 
+	switch cmd {
+
+	case udp.PING:
+		conn.WriteToUDP([]byte{byte(udp.PONG)}, remote)
+	default:
+		fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", len(buf), remote, buf)
+
+	}
 }
