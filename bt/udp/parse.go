@@ -36,6 +36,7 @@ func Parse(buf []byte, remote *net.UDPAddr, conn *Conn) {
 			REPLYD.Add(ip)
 			conn.WriteUDP([]byte{byte(PONG)}, remote)
 		} else {
+			println("remote.IP", remote.IP.String())
 			println("IP", ip)
 			println("REPLYD.Cardinality()", REPLYD.Size())
 			println("REPLYD.Contains(remote.IP)", REPLYD.Has(ip))
