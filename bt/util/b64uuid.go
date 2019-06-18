@@ -10,8 +10,8 @@ func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
-func B64uuid() string {
-	token := make([]byte, 16)
+func RandByteB64(size int) string {
+	token := make([]byte, size)
 	rand.Read(token)
 	return base64.RawURLEncoding.EncodeToString(token)
 }

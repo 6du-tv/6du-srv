@@ -22,7 +22,7 @@ import (
 */
 
 func main() {
-	print(CONFIG.ID)
+	print(CONFIG.SECRET)
 	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", CONFIG.PORT))
 	Throw(err)
 
@@ -41,7 +41,7 @@ func main() {
 		// write a message to server
 		for range ticker.C {
 			buffer := []byte{byte(udp.PING)}
-			//		append(buffer, []byte(util.B64uuid()))
+			//		append(buffer, []byte(util.RandByteB64(32)))
 			conn.WriteUDP(buffer, remoteAddr)
 
 		}

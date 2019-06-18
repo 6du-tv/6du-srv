@@ -17,9 +17,9 @@ import (
 )
 
 type Config struct {
-	ID   string
-	MTU  uint16
-	PORT uint16
+	SECRET string
+	MTU    uint16
+	PORT   uint16
 }
 
 var CONFIG Config
@@ -38,8 +38,8 @@ func init() {
 
 	update := false
 
-	if 0 == len(CONFIG.ID) {
-		CONFIG.ID = util.B64uuid()
+	if 0 == len(CONFIG.SECRET) {
+		CONFIG.SECRET = util.RandByteB64(32)
 		update = true
 	}
 
