@@ -27,10 +27,12 @@ func Parse(buf []byte, remote *net.UDPAddr, conn *Conn) {
 	switch cmd {
 
 	case PING:
-		if !REPLYD.Contains(remote.IP) && REPLYD.Cardinality() < 1024 {
-			REPLYD.Add(remote.IP)
+		ip := remote.IP.To16
+		if !REPLYD.Contains(ip) && REPLYD.Cardinality() < 1024 {
+			REPLYD.Add(ip)
 			conn.WriteUDP([]byte{byte(PONG)}, remote)
 		} else {
+			print("IP", ip)
 			print("REPLYD.Cardinality()", REPLYD.Cardinality())
 			print("REPLYD.Contains(remote.IP)", REPLYD.Contains(remote.IP))
 			print("REPLYD", REPLYD)
