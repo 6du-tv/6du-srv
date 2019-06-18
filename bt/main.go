@@ -3,50 +3,13 @@ package main
 import (
 	util "bt/util"
 
-	"bytes"
+	. "github.com/urwork/throw"
+
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
-	"os"
-	"path"
-	"runtime"
 	"time"
-
-	"github.com/BurntSushi/toml"
-	. "github.com/urwork/throw"
 )
-
-type Config struct {
-	ID string
-}
-
-var CONFIG Config
-
-func init() {
-	_, filename, _, _ := runtime.Caller(0)
-
-	dirname := path.Dir(filename)
-	filepath := path.Join(dirname, "config.toml")
-
-	_, err := os.Stat(filepath)
-	if !os.IsNotExist(err) {
-		_, err := toml.DecodeFile(filepath, &CONFIG)
-		Throw(err)
-	}
-
-	if 0 == len(CONFIG.ID) {
-		CONFIG.ID = util.B64uuid()
-		b := &bytes.Buffer{}
-		Throw(toml.NewEncoder(b).Encode(CONFIG))
-		Throw(ioutil.WriteFile(filepath, b.Bytes(), 0644))
-	}
-
-	print(CONFIG.ID)
-
-}
-
-const MTU int = 1472
 
 type CMD uint8
 
@@ -65,7 +28,7 @@ const (
 */
 
 func main() {
-
+	print(util.CONFIG.ID)
 	localAddr, err := net.ResolveUDPAddr("udp", ":20000")
 	Throw(err)
 
@@ -94,7 +57,7 @@ func main() {
 
 	for {
 		// Receive response from server
-		buf := make([]byte, MTU)
+		buf := make([]byte, util.CONFIG.MTU)
 		rn, remAddr, err := conn.ReadFromUDP(buf)
 		if err != nil {
 			log.Println(err)
