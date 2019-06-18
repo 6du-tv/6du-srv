@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"fmt"
@@ -6,6 +6,9 @@ import (
 	"math/rand"
 	"net"
 	"time"
+	"./util/wait"
+	"./util/b64uuid"
+
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -64,7 +67,7 @@ func main() {
 
 	ticker := time.NewTicker(1 * time.Second)
 
-	go func() {
+	Wait.Run func() {
 		// write a message to server
 		for range ticker.C {
 			print(B64uuid())
