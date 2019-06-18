@@ -15,7 +15,7 @@ var REPLYD = set.NewUint64Set()
 
 func init() {
 
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(60 * time.Second)
 
 	go func() {
 		// write a message to server
