@@ -21,19 +21,6 @@ import (
 
 */
 
-type UDPConn struct {
-	*net.UDPConn
-}
-
-func (conn *UDPConn) WriteUDP(b []byte, addr *net.UDPAddr) {
-	_, err := conn.WriteToUDP(b, addr)
-	if err != nil {
-		log.Println(err)
-	} else {
-		fmt.Printf(">>> Packet sent to %s : %x\n", addr, b)
-	}
-}
-
 func main() {
 	print(CONFIG.ID)
 	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", CONFIG.PORT))
@@ -46,7 +33,7 @@ func main() {
 	_conn, err := net.ListenUDP("udp", localAddr)
 	Throw(err)
 	defer _conn.Close()
-	conn := &UDPConn{_conn}
+	conn := &udp.Conn{_conn}
 
 	ticker := time.NewTicker(10 * time.Second)
 
@@ -69,20 +56,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		} else {
-			Parse(buf[:rn], remAddr, conn)
+			udp.Parse(buf[:rn], remAddr, conn)
 		}
-	}
-}
-
-func Parse(buf []byte, remote *net.UDPAddr, conn *UDPConn) {
-	cmd := udp.CMD(buf[0])
-
-	switch cmd {
-
-	case udp.PING:
-		conn.WriteUDP([]byte{byte(udp.PONG)}, remote)
-	default:
-		fmt.Printf("<<<  %d bytes received from: %v, data: %x\n", len(buf), remote, buf)
-
 	}
 }

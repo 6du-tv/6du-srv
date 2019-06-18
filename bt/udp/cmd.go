@@ -1,4 +1,4 @@
-package net
+package udp
 
 type CMD uint8
 
