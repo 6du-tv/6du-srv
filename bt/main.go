@@ -30,7 +30,7 @@ func (conn *UDPConn) WriteUDP(b []byte, addr *net.UDPAddr) {
 	if err != nil {
 		log.Println(err)
 	} else {
-		fmt.Println(">>> Packet sent to: ", addr)
+		fmt.Printf(">>> Packet sent to %s : %x", addr, b)
 	}
 }
 
