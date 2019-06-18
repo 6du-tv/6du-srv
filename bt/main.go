@@ -51,13 +51,20 @@ func main() {
 	}()
 
 	for {
-		// Receive response from server
-		buf := make([]byte, CONFIG.MTU)
+		// 根据UDP协议，从UDP数据包的包头可以看出，UDP的最大包长度是2^16-1的个字节
+		// 由于UDP包头占8个字节，而在IP层进行封装后的IP包头占去20字节，所以这个是UDP数据包的最大理论长度是2^16 - 1 - 8 - 20 = 65507字节
+		buf := make([]byte, 65507)
+
 		rn, remAddr, err := conn.ReadFromUDP(buf)
 		if err != nil {
-			log.Println(err)
+			log.Fatal(err)
 		} else {
-			fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", rn, remAddr, string(buf[:rn]))
+			Parse(buf[:rn], remAddr, conn)
 		}
 	}
+}
+
+func Parse(buf []byte, remote *net.UDPAddr, conn *net.UDPConn) {
+	fmt.Printf("<<<  %d bytes received from: %v, data: %s\n", remote, buf)
+
 }
