@@ -5,10 +5,10 @@ import (
 	"net"
 	"time"
 
-	mapset "github.com/deckarep/golang-set"
+	"github.com/scylladb/go-set"
 )
 
-var REPLYD = mapset.NewSet()
+var REPLYD = set.NewIntSet()
 
 func init() {
 	ticker := time.NewTicker(1 * time.Second)
