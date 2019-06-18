@@ -39,7 +39,7 @@ func Parse(buf []byte, remote *net.UDPAddr, conn *Conn) {
 			println("IP", ip)
 			println("REPLYD.Cardinality()", REPLYD.Size())
 			println("REPLYD.Contains(remote.IP)", REPLYD.Has(ip))
-			println("REPLYD", REPLYD)
+			println("REPLYD", REPLYD.String())
 		}
 
 	default:
