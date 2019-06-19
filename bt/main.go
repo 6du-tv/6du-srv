@@ -22,7 +22,7 @@ import (
 */
 
 func main() {
-	fmt.Sprintf("%x", SECRET)
+	fmt.Printf("%x", SECRET)
 	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", CONFIG.NET.PORT))
 	Throw(err)
 

@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"crypto/ecdsa"
+	"errors"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -60,7 +61,9 @@ func initKey() {
 		Throw(ioutil.WriteFile(filepath, SECRET, 0400))
 
 	}
-	print("SECRET LEN ", len(SECRET))
+	if 32 != len(SECRET) {
+		panic(errors.New("secret length != 32"))
+	}
 }
 
 func initConfig() {
