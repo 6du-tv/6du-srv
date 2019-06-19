@@ -44,8 +44,11 @@ func init() {
 
 func initKey() {
 	filepath := path.Join(ROOT, CONFIG.PATH.KEY)
+	var err error
+	SECRET, err = ioutil.ReadFile(filepath)
 
-	if 0 == len(SECRET) {
+	if os.IsNotExist(err) || (err == nil && len(SECRET) == 0) {
+
 		// 参考 https://github.com/ethereum/go-ethereum/blob/master/crypto/crypto.go
 		// privateKey := hex.EncodeToString()
 		// address := crypto.PubkeyToAddress(key.PublicKey).Hex()
@@ -54,9 +57,10 @@ func initKey() {
 
 		SECRET = key.D.Bytes()
 
-		Throw(ioutil.WriteFile(filepath, SECRET, 0600))
-	}
+		Throw(ioutil.WriteFile(filepath, SECRET, 0400))
 
+	}
+	print("SECRET LEN ", len(SECRET))
 }
 
 func initConfig() {
