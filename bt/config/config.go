@@ -89,11 +89,10 @@ func initKey() {
 
 	KEY.SECRET = private
 
-	pubkey := btcec.PublicKey(*pub)
-	KEY.PUBLIC = &pubkey
+	KEY.PUBLIC = &btcec.PublicKey(*pub)
 
 	h := make([]byte, 64)
-	sha3.ShakeSum256(h, pubkey.SerializeCompressed())
+	sha3.ShakeSum256(h, KEY.PUBLIC.SerializeCompressed())
 
 	copy(KEY.HASH[:], h)
 	fmt.Printf("%x\n", h)
