@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/ecdsa"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"math/big"
 	"math/rand"
@@ -38,7 +37,7 @@ type Config struct {
 type Key struct {
 	PUBLIC *btcec.PublicKey
 	SECRET *ecdsa.PrivateKey
-	HASH   [64]byte
+	ID     [64]byte
 }
 
 var CONFIG Config
@@ -95,9 +94,7 @@ func initKey() {
 	h := make([]byte, 64)
 	sha3.ShakeSum256(h, pubkey.SerializeCompressed())
 
-	copy(KEY.HASH[:], h)
-	fmt.Printf("%x\n", h)
-	fmt.Printf("%x\n", KEY.HASH)
+	copy(KEY.ID[:], h)
 
 }
 
