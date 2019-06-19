@@ -36,6 +36,7 @@ type Config struct {
 }
 
 type Key struct {
+	PUBLIC *btcec.PublicKey
 	SECRET *ecdsa.PrivateKey
 	HASH   [64]byte
 }
@@ -80,6 +81,8 @@ func initKey() {
 		X:     x,
 		Y:     y,
 	}
+
+	key.PUBLIC = pub
 
 	private := &ecdsa.PrivateKey{
 		PublicKey: *pub,
