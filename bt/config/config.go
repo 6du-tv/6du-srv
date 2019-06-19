@@ -82,7 +82,10 @@ func initKey() {
 	pubkey := pub.SerializeCompressed()
 	h := make([]byte, 64)
 	sha3.ShakeSum256(h, pubkey)
-	fmt.Printf("%x", h)
+	copy(KEY.HASH[:], h)
+	fmt.Printf("%x\n", h)
+	fmt.Printf("%x\n", KEY.HASH)
+
 }
 
 func initConfig() {
