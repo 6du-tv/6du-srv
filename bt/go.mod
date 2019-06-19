@@ -8,4 +8,5 @@ require (
 	github.com/ethereum/go-ethereum v1.8.27 // indirect
 	github.com/scylladb/go-set v1.0.2
 	github.com/urwork/throw v0.0.0-20190618055048-7c9a09a1ea0f
+	golang.org/x/crypto v0.0.0-20170930174604-9419663f5a44
 )

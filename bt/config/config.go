@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/ecdsa"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -13,6 +14,7 @@ import (
 	cryptoRand "crypto/rand"
 
 	"github.com/btcsuite/btcd/btcec"
+	"golang.org/x/crypto/sha3"
 
 	"github.com/BurntSushi/toml"
 	. "github.com/urwork/throw"
@@ -32,10 +34,13 @@ type Config struct {
 	NET  Net
 }
 
-var SECRET []byte
+type Key struct {
+	SECRET []byte
+	HASH   [64]byte
+}
 
 var CONFIG Config
-
+var KEY Key
 var ROOT = Root()
 
 func init() {
@@ -45,25 +50,39 @@ func init() {
 
 func initKey() {
 	filepath := path.Join(ROOT, CONFIG.PATH.KEY)
-	var err error
-	SECRET, err = ioutil.ReadFile(filepath)
+	secret, err := ioutil.ReadFile(filepath)
 
-	if os.IsNotExist(err) || (err == nil && len(SECRET) == 0) {
+	curve := btcec.S256()
+	if os.IsNotExist(err) || (err == nil && len(secret) == 0) {
 
 		// 参考 https://github.com/ethereum/go-ethereum/blob/master/crypto/crypto.go
 		// privateKey := hex.EncodeToString()
 		// address := crypto.PubkeyToAddress(key.PublicKey).Hex()
 
-		key, _ := ecdsa.GenerateKey(btcec.S256(), cryptoRand.Reader)
+		key, _ := ecdsa.GenerateKey(curve, cryptoRand.Reader)
 
-		SECRET = key.D.Bytes()
+		secret = key.D.Bytes()
 
-		Throw(ioutil.WriteFile(filepath, SECRET, 0400))
+		Throw(ioutil.WriteFile(filepath, secret, 0400))
 
+	} else {
+		if 32 != len(secret) {
+			panic(errors.New("secret length != 32"))
+		}
 	}
-	if 32 != len(SECRET) {
-		panic(errors.New("secret length != 32"))
+
+	pk := secret
+	x, y := curve.ScalarBaseMult(pk)
+
+	pub := &btcec.PublicKey{
+		Curve: curve,
+		X:     x,
+		Y:     y,
 	}
+	pubkey := pub.SerializeCompressed()
+	h := make([]byte, 64)
+	sha3.ShakeSum256(h, pubkey)
+	fmt.Printf("%x", h)
 }
 
 func initConfig() {
