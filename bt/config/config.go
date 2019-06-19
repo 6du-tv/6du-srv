@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"math/rand"
 	"os"
 	"path"
@@ -35,7 +36,7 @@ type Config struct {
 }
 
 type Key struct {
-	SECRET []byte
+	SECRET *ecdsa.PrivateKey
 	HASH   [64]byte
 }
 
@@ -74,14 +75,23 @@ func initKey() {
 	pk := secret
 	x, y := curve.ScalarBaseMult(pk)
 
-	pub := &btcec.PublicKey{
+	pub := &ecdsa.PublicKey{
 		Curve: curve,
 		X:     x,
 		Y:     y,
 	}
-	pubkey := pub.SerializeCompressed()
+
+	private := &ecdsa.PrivateKey{
+		PublicKey: *pub,
+		D:         new(big.Int).SetBytes(pk),
+	}
+
+	KEY.SECRET = private
+
+	pubkey := btcec.PublicKey(*pub)
 	h := make([]byte, 64)
-	sha3.ShakeSum256(h, pubkey)
+	sha3.ShakeSum256(h, pubkey.SerializeCompressed())
+
 	copy(KEY.HASH[:], h)
 	fmt.Printf("%x\n", h)
 	fmt.Printf("%x\n", KEY.HASH)
