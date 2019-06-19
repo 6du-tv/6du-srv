@@ -6,10 +6,8 @@ import (
 	"encoding/base64"
 	"io/ioutil"
 	"math/rand"
-
 	"os"
 	"path"
-	"runtime"
 
 	udp "bt/udp"
 	cryptoRand "crypto/rand"
@@ -29,10 +27,7 @@ type Config struct {
 var CONFIG Config
 
 func init() {
-	_, filename, _, _ := runtime.Caller(0)
-
-	dirname := path.Dir(filename)
-	filepath := path.Join(dirname, "config.toml")
+	filepath := path.Join(Root(), "config.toml")
 
 	_, err := os.Stat(filepath)
 	if !os.IsNotExist(err) {
