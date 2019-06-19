@@ -82,8 +82,6 @@ func initKey() {
 		Y:     y,
 	}
 
-	key.PUBLIC = pub
-
 	private := &ecdsa.PrivateKey{
 		PublicKey: *pub,
 		D:         new(big.Int).SetBytes(pk),
@@ -92,6 +90,8 @@ func initKey() {
 	KEY.SECRET = private
 
 	pubkey := btcec.PublicKey(*pub)
+	KEY.PUBLIC = &pubkey
+
 	h := make([]byte, 64)
 	sha3.ShakeSum256(h, pubkey.SerializeCompressed())
 
