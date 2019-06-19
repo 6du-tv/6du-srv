@@ -22,8 +22,8 @@ import (
 */
 
 func main() {
-	print(CONFIG.SECRET)
-	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", CONFIG.PORT))
+	fmt.Sprintf("%x", SECRET)
+	localAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", CONFIG.NET.PORT))
 	Throw(err)
 
 	remoteAddr, err := net.ResolveUDPAddr("udp", "47.105.53.166:27039")

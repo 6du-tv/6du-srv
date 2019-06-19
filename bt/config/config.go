@@ -3,7 +3,6 @@ package config
 import (
 	"bytes"
 	"crypto/ecdsa"
-	"encoding/base64"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -18,16 +17,50 @@ import (
 	. "github.com/urwork/throw"
 )
 
-type Config struct {
-	SECRET string
-	MTU    uint16
-	PORT   uint16
+type Path struct {
+	KEY string
 }
+
+type Net struct {
+	MTU  uint16
+	PORT uint16
+}
+
+type Config struct {
+	PATH Path
+	NET  Net
+}
+
+var SECRET []byte
 
 var CONFIG Config
 
+var ROOT = Root()
+
 func init() {
-	filepath := path.Join(Root(), "config.toml")
+	initConfig()
+	initKey()
+}
+
+func initKey() {
+	filepath := path.Join(ROOT, CONFIG.PATH.KEY)
+
+	if 0 == len(SECRET) {
+		// 参考 https://github.com/ethereum/go-ethereum/blob/master/crypto/crypto.go
+		// privateKey := hex.EncodeToString()
+		// address := crypto.PubkeyToAddress(key.PublicKey).Hex()
+
+		key, _ := ecdsa.GenerateKey(btcec.S256(), cryptoRand.Reader)
+
+		SECRET = key.D.Bytes()
+
+		Throw(ioutil.WriteFile(filepath, SECRET, 0600))
+	}
+
+}
+
+func initConfig() {
+	filepath := path.Join(ROOT, "config.toml")
 
 	_, err := os.Stat(filepath)
 	if !os.IsNotExist(err) {
@@ -37,22 +70,21 @@ func init() {
 
 	update := false
 
-	if 0 == len(CONFIG.SECRET) {
-		// https://github.com/ethereum/go-ethereum/blob/master/crypto/crypto.go
+	if 0 == len(CONFIG.PATH.KEY) {
+		key, err := os.Hostname()
+		if err != nil {
+			key = "default"
+		}
 
-		key, _ := ecdsa.GenerateKey(btcec.S256(), cryptoRand.Reader)
-		//		privateKey := hex.EncodeToString()
-		//		address := crypto.PubkeyToAddress(key.PublicKey).Hex()
-		CONFIG.SECRET = base64.RawURLEncoding.EncodeToString(key.D.Bytes())
+		CONFIG.PATH.KEY = key + ".key"
+	}
+
+	if 0 == CONFIG.NET.MTU {
+		CONFIG.NET.MTU = 1472
 		update = true
 	}
 
-	if 0 == CONFIG.MTU {
-		CONFIG.MTU = 1472
-		update = true
-	}
-
-	if 0 == CONFIG.PORT {
+	if 0 == CONFIG.NET.PORT {
 		port := uint16(rand.Int31n(20000)) + 10000
 		for ; port < 49000; port++ {
 			if !udp.PortUsed(port) {
@@ -60,7 +92,7 @@ func init() {
 			}
 		}
 
-		CONFIG.PORT = port
+		CONFIG.NET.PORT = port
 		update = true
 	}
 
@@ -68,6 +100,6 @@ func init() {
 		b := &bytes.Buffer{}
 		Throw(toml.NewEncoder(b).Encode(CONFIG))
 
-		Throw(ioutil.WriteFile(filepath, b.Bytes(), 0644))
+		Throw(ioutil.WriteFile(filepath, b.Bytes(), os.ModePerm))
 	}
 }
